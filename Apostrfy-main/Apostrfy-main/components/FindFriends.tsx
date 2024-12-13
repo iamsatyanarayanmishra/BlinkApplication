@@ -8,7 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 const FindFriends = ({ navigation, route }) => {
   // const { id, name, email } = route.params;
   // Extract userId from the route params
-  const { userId } = route.params;
+  const { username } = route.params;
 
   // Debugging to ensure userId is passed correctly
   const { updateUserData } = useContext(GlobalContext);
@@ -231,17 +231,17 @@ const FindFriends = ({ navigation, route }) => {
   };
 
   const handleNextButton = async () => {
-    if (!userId) {
+    if (!username) {
       console.error('User ID is not available');
       return;
     }
   
     try {
-      const response = await fetch('http://192.168.1.101:8080/api/users/update-contact', {
+      const response = await fetch('http://192.168.1.226:8080/api/users/update-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId, // Include userId in the request body for reference
+          userName: username, // Include userId in the request body for reference
           phoneNumber: number,
           countryCode: selectedCountry.code,
         }),
@@ -250,8 +250,8 @@ const FindFriends = ({ navigation, route }) => {
       if (response.ok) {
         console.log('Contact updated successfully');
         // Navigate to the FindFriends screen and pass the userId
-        updateUserData({ selectedCountry, number });
-        navigation.navigate('Preferences', { userId });
+        updateUserData({ selectedCountry, number, username});
+        navigation.navigate('Preferences', { username });
       } else {
         console.error('Failed to update contact');
       }

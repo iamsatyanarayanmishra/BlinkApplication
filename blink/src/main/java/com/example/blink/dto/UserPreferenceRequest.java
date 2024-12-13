@@ -2,6 +2,7 @@ package com.example.blink.dto;
 
 public class UserPreferenceRequest {
     private Long userId;
+    private String username;
     private String preference;
 
     public Long getUserId() {
@@ -10,6 +11,14 @@ public class UserPreferenceRequest {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return username;
+    }
+
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public String getPreference() {

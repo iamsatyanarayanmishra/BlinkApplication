@@ -8,54 +8,95 @@ import Foundation from '@expo/vector-icons/Foundation';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 
-// Sample chat data
-const sampleConnections = [
-  { id: '1', name: 'John Doe', lastMessage: 'Hey, how are you?', profileImage: require('@/assets/images/Avatar.jpg'), time: '20:25' },
-  { id: '2', name: 'Jane Smith', lastMessage: 'See you soon!', profileImage: require('@/assets/images/Avatar2.jpg'), time: '18:25' },
-  { id: '3', name: 'John Doe', lastMessage: 'Hey, how are you?', profileImage: require('@/assets/images/Avatar3.jpg'), time: '15:40' },
-  { id: '4', name: 'John', lastMessage: 'Hey, how are you?', profileImage: require('@/assets/images/Avatar4.jpg'), time: '20:00' },
-  { id: '5', name: 'Manish', lastMessage: 'Hey, how are you?', profileImage: require('@/assets/images/Default-Image.png'), time: '21:05' },
-];
-
 const Chats = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [connections, setConnections] = useState([]);
   const [archivedConnections, setArchivedConnections] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [isLongPressed, setIsLongPressed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const sortConnectionsByTime = (connections) => {
-    return connections.slice().sort((a, b) => {
-      const [hourA, minuteA] = a.time.split(':').map(Number);
-      const [hourB, minuteB] = b.time.split(':').map(Number);
-      return hourB - hourA || minuteB - minuteA; // Compare hours first, then minutes
-    });
+  // Sort connections by time
+  // const sortConnectionsByTime = (connections) => {
+  //   return connections.slice().sort((a, b) => {
+  //     const [hourA, minuteA] = a.time.split(':').map(Number);
+  //     const [hourB, minuteB] = b.time.split(':').map(Number);
+  //     return hourB - hourA || minuteB - minuteA; // Compare hours first, then minutes
+  //   });
+  // };
+
+  const userId = 1; // Assuming the user ID is 1 for this example
+
+  // Fetch connections from the API with search query
+  const fetchConnections = async (search = '') => {
+    try {
+      const response = await fetch(`http://192.168.1.226:8080/api/chats/${userId}?search=${search}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setConnections(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const archiveChat = async (itemId) => {
+    try {
+      const response = await fetch(`http://192.168.1.226:8080/api/chats/${itemId}/archive`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to archive chat: ${response.statusText}`);
+      }
+
+      const updatedConnections = connections.filter((connection) => connection.id !== itemId);
+      const selectedChat = connections.find((connection) => connection.id === itemId);
+
+      if (selectedChat) {
+        setArchivedConnections((prev) => [...prev, selectedChat]);
+      }
+
+      setConnections(sortConnectionsByTime(updatedConnections));
+    } catch (err) {
+      setError('Could not archive chat. Please try again.');
+    }
+  };
+
+  const deleteChat = async (itemId) => {
+    try {
+      const response = await fetch(`http://192.168.1.226:8080/api/chats/${itemId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete chat: ${response.statusText}`);
+      }
+
+      setConnections((prevConnections) =>
+        prevConnections.filter((connection) => connection.id !== itemId)
+      );
+    } catch (err) {
+      setError('Could not delete chat. Please try again.');
+    }
   };
 
   useEffect(() => {
-    setConnections(sortConnectionsByTime(sampleConnections));
-  }, []);
+    const fetchData = async () => {
+      if (searchQuery !== '') {
+        console.log(`Fetching filtered connections for query: ${searchQuery}`);
+        await fetchConnections(searchQuery); // Fetch filtered connections
+      } else {
+        console.log('Fetching all connections');
+        await fetchConnections(); // Fetch all connections
+      }
+    };
 
-  const filteredConnections = connections.filter(connection =>
-    connection.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    fetchData();
+  }, [searchQuery]); // Monitor searchQuery changes
 
-  const archiveChat = (itemId) => {
-    const newConnections = connections.filter(connection => connection.id !== itemId);
-    const selectedChat = connections.find(connection => connection.id === itemId);
-    
-    // Update the archived chats state
-    if (selectedChat) {
-      setArchivedConnections(prevArchivedConnections => [...prevArchivedConnections, selectedChat]);
-    }
-    
-    // Update the connections state
-    setConnections(sortConnectionsByTime(newConnections));
-  };
-
-  const deleteChat = (itemId) => {
-    setConnections(prevConnections => prevConnections.filter(connection => connection.id !== itemId));
-  };
 
   const renderChatItem = ({ item }) => {
     const renderRightActions = () => (
@@ -78,35 +119,57 @@ const Chats = ({ navigation }) => {
           style={[styles.chatItem, { backgroundColor: selectedIds.includes(item.id) ? '#ADD8E6' : '#F9F9F9' }]}
           onPress={() => navigation.navigate('MessageScreen', { chatData: item })}
         >
-          <Image source={item.profileImage} style={styles.profilePicture} />
+          {/* Use default placeholder image if `profileImage` isn't in the response */}
+          <Image
+            source={{ uri: item.profileImage || 'https://via.placeholder.com/150' }}
+            style={styles.profilePicture}
+          />
           <View style={styles.chatContent}>
             <View style={styles.chatHeader}>
               <Text style={styles.userName}>{item.name}</Text>
-              <Text style={styles.chatTime}>{item.time}</Text>
+              <Text style={styles.chatTime}>{item.phoneNumber || ''}</Text>
             </View>
-            <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+            <Text style={styles.lastMessage}>{item.email || 'No message available'}</Text>
           </View>
         </TouchableOpacity>
       </Swipeable>
     );
   };
 
+
   const renderArchivedSection = () => (
-    <TouchableOpacity style={styles.archiveSection} onPress={() => navigation.navigate('ArchivedChats', { archivedChats: archivedConnections, setArchivedChats: setArchivedConnections, setConnections: setConnections })}>
+    <TouchableOpacity
+      style={styles.archiveSection}
+      onPress={() =>
+        navigation.navigate('ArchivedChats', {
+          archivedChats: archivedConnections,
+          setArchivedChats: setArchivedConnections,
+          setConnections: setConnections,
+        })
+      }
+    >
       <Foundation name="archive" size={20} color="black" />
       <Text style={styles.archiveText}>Archived ({archivedConnections.length})</Text>
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return <Text style={styles.loadingText}>Loading chats...</Text>;
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>Error: {error}</Text>;
+  }
+
   return (
     <View style={styles.container}>
-        <Header />
+      <Header />
 
       <View style={styles.contentContainer}>
         <View style={{ paddingHorizontal: 20 }}>
           <View style={styles.searchContainer}>
-            <TouchableOpacity onPress={()=> navigation.navigate('GroupSelection')}>
-            <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
+            <TouchableOpacity onPress={() => navigation.navigate('GroupSelection')}>
+              <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
             </TouchableOpacity>
             <TextInput
               style={styles.searchInput}
@@ -121,9 +184,9 @@ const Chats = ({ navigation }) => {
         {archivedConnections.length > 0 && renderArchivedSection()}
 
         <FlatList
-          data={searchQuery ? filteredConnections : connections}
+          data={connections}
           renderItem={renderChatItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id.toString()}
           style={styles.chatContainer}
           showsVerticalScrollIndicator={false}
         />

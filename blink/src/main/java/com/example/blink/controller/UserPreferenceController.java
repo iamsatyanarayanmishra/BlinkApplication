@@ -15,7 +15,8 @@ public class UserPreferenceController {
 
     @PostMapping("/preferences")
     public ResponseEntity<String> saveUserPreference(@RequestBody UserPreferenceRequest request) {
-        userPreferenceService.saveUserPreference(request.getUserId(), request.getPreference());
+        userPreferenceService.saveUserPreference(request.getUserName(), request.getPreference());
+        System.out.println(request.getUserName());
         return ResponseEntity.ok("Preference Updated Successfully.");
     }
 }

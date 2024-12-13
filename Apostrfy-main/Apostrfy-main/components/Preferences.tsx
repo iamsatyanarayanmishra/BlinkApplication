@@ -5,10 +5,10 @@ import { GlobalContext } from './GlobalContext';
 const Preferences = ({ navigation, route }) => {
   const [selectedPreference, setSelectedPreference] = useState(null);
   const { updateUserData, userData } = useContext(GlobalContext);
-  const { userId } = route.params || {}; // Ensure `params` exists
+  const { username } = route.params || {}; // Ensure `params` exists
 
-  if (!userId) {
-    console.error("userId is undefined.");
+  if (!username) {
+    console.error("username is undefined.");
     return <Text>Error: userId not found</Text>; // Gracefully handle the error
   }
 
@@ -39,21 +39,21 @@ const Preferences = ({ navigation, route }) => {
     const selected = preferenceList.find((item) => item.id === selectedPreference);
     if (selected) {
       try {
-        const response = await fetch(`http://192.168.1.101:8080/api/users/preferences`, {
+        const response = await fetch(`http://192.168.1.226:8080/api/users/preferences`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: userId, // Pass userId in the body
+            userName: username, // Pass userId in the body
             preference: selected.title,
           }),
         });
 
         if (response.ok) {
           console.log('Preference saved successfully!');
-          updateUserData({ preference: selected.title , userId});
-          navigation.navigate('BottomTabs', { userId });
+          updateUserData({ preference: selected.title , username});
+          navigation.navigate('BottomTabs', { username });
         } else {
           const result = await response.json();
           console.error('Failed to save preference:', result);

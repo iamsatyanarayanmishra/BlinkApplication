@@ -1,9 +1,10 @@
 package com.example.blink.dto;
 
-public class UserNameUpdateRequest {
+public class UserRequest {
     private Long userId;
     private String username;
-    private String name;
+
+    // Getter and Setter
 
     public Long getUserId(){
         return userId;
@@ -13,19 +14,11 @@ public class UserNameUpdateRequest {
         this.userId = userId;
     }
 
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
-    public void setUserName(String username) {
+    public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public void setName(String name){
-        this.name = name;
     }
 }

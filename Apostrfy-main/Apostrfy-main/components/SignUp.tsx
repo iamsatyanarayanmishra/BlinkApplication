@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 
 const SignUp = ({ navigation, route }) => {
-  // const { id } = route.params;
+  const { username } = route.params;
   const { updateUserData } = useContext(GlobalContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,41 +30,27 @@ const SignUp = ({ navigation, route }) => {
     if (validateInputs()) {
       try {
         // Send signup request
-        const response = await fetch('http://192.168.1.101:8080/api/users/signup', {
+        const response = await fetch('http://192.168.1.226:8080/api/users/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email }),
+          body: JSON.stringify({ username, name, email }),
         });
-  
+
         if (response.ok) {
-          // Parse the response to get the userId
-          const data = await response.json();
-  
-          // Assuming the backend returns the userId in the response
-          const { userId } = data;
-  
-          // Ensure userId is present
-          if (!userId) {
-            setError('User ID not found');
-            return;
-          }
-  
-          // Save user data (userId, name, email)
-          updateUserData({ name, email, userId });
-  
-          // Navigate to the FindFriends screen and pass the userId
-          navigation.navigate('FindFriends', { userId });
+          // Save user data
+          updateUserData({ name, email, username});
+          // Navigate to the next screen
+          navigation.navigate('FindFriends', { username });
         } else {
-          // If signup fails, capture and display the error message from the backend
           const error = await response.text();
           setError(error || 'Failed to signup. Please try again.');
         }
       } catch (err) {
-        // Handle error if something goes wrong with the request
         setError('Something went wrong. Please try again.');
       }
     }
   };
+
 
   return (
     <View style={styles.container}>

@@ -1,14 +1,34 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import Feather from '@expo/vector-icons/Feather';
 import { GlobalContext } from './GlobalContext';
+import { useDerivedValue } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
 
 export default function ApostrfyIDScreen({ navigation, route }) {
   // const { id } = route.params;
-  const {userData} = useContext(GlobalContext);
+  const { userData } = useContext(GlobalContext);
+  const username = userData.id;
+  const saveUsernameToBackend = async () => {
+    try {
+        const response = await fetch('http://192.168.1.226:8080/api/users/save-username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }), // Replace id with username
+        });
+        if (!response.ok) {
+            throw new Error('Failed to save username');
+            return;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
 
   return (
     <View style={styles.container}>
@@ -36,9 +56,15 @@ export default function ApostrfyIDScreen({ navigation, route }) {
       </View>
 
       {/* "Next" Button at Bottom */}
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+    style={styles.button}
+    onPress={() => {
+        saveUsernameToBackend();
+        navigation.navigate('SignUp', {username});
+    }}
+>
+    <Text style={styles.buttonText}>Next</Text>
+</TouchableOpacity>
     </View>
   );
 }

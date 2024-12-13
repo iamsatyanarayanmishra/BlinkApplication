@@ -1,8 +1,9 @@
 package com.example.blink.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
@@ -14,9 +15,8 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank(message = "Name is required")
     private String name;
-    
+
     @Email
     private String email;
 
@@ -28,11 +28,22 @@ public class User {
 
     private String preference;
 
-    private String profilePicturePath; // Path to the profile image
-
     private String password;
 
+    // Existing fields
+    private List<String> messages;  // List of messages for the user (as an example)
+    
+    // Getters and setters for messages
+    public List<String> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<String> messages) {
+        this.messages = messages;
+    }
+
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -81,27 +92,19 @@ public class User {
         this.number = number;
     }
 
-    public void setPreference(String preference){
+    public void setPreference(String preference) {
         this.preference = preference;
     }
 
-    public String getPreference(){
+    public String getPreference() {
         return preference;
     }
 
-    public String getProfilePicturePath(){
-        return profilePicturePath;
-    }
-
-    public void setProfilePicturePath(String profilePicturePath){
-        this.profilePicturePath = profilePicturePath;
-    }
-
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 }

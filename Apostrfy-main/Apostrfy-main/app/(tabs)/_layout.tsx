@@ -60,7 +60,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function BottomTabNavigator({ route }) {
-  const { userId } = route.params; // Get userId from navigation params
+  const { username } = route.params; // Get userId from navigation params
   return (
     <Tab.Navigator
       initialRouteName="Profile"
@@ -111,22 +111,22 @@ function BottomTabNavigator({ route }) {
       <Tab.Screen
         name="Contact"
         component={Contacts}
-        initialParams={{ userId }} // Pass userId to Contact screen
+        initialParams={{ username }} // Pass userId to Contact screen
       />
       <Tab.Screen
         name="Chats"
         component={Chats}
-        initialParams={{ userId }} // Pass userId to Chats screen
+        initialParams={{ username }} // Pass userId to Chats screen
       />
       <Tab.Screen
         name="Profile"
         component={ProfileComponent}
-        initialParams={{ userId }} // Pass userId to Profile screen
+        initialParams={{ username }} // Pass userId to Profile screen
       />
       <Tab.Screen
         name="Settings"
         component={Settings}
-        initialParams={{ userId }} // Pass userId to Settings screen
+        initialParams={{ username }} // Pass userId to Settings screen
       />
     </Tab.Navigator>
   );

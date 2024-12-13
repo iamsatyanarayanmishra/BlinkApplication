@@ -10,11 +10,11 @@ public class UserPreferenceService {
     @Autowired
     private UserRepository userRepository;
 
-    public void saveUserPreference(Long userId, String preference) {
+    public void saveUserPreference(String username, String preference) {
         // Find the user by ID
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+                
         // Update user details
         user.setPreference(preference);
 

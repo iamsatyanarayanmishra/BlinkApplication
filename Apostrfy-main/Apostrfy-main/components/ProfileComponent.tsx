@@ -36,7 +36,7 @@ const ProfileComponent = ({ navigation, route }) => {
   const [number, setNumber] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const { userId } = route.params; // Ensure `params` exists
+  const { username } = route.params; // Ensure `params` exists
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -114,11 +114,11 @@ const ProfileComponent = ({ navigation, route }) => {
   const updateUserNumber = async () => {
     try {
       const body = {
-        userId: userId, // Pass the user's ID
+        userName: username, // Pass the user's ID
         phoneNumber: number, // Match the backend field name
       };
       // Send the PUT request
-      const response = await fetch('http://192.168.1.101:8080/api/users/update-number', {
+      const response = await fetch('http://192.168.1.226:8080/api/users/update-number', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -146,11 +146,11 @@ const ProfileComponent = ({ navigation, route }) => {
   const updateUserEmail = async () => {
     try {
       const body = {
-        userId: userId, // Pass the user's ID
+        userName: username, // Pass the user's ID
         email: email, // Match the backend field name
       };
       // Send the PUT request
-      const response = await fetch('http://192.168.1.101:8080/api/users/update-email', {
+      const response = await fetch('http://192.168.1.226:8080/api/users/update-email', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -178,11 +178,11 @@ const ProfileComponent = ({ navigation, route }) => {
   const updateUserName = async () => {
     try {
       const body = {
-        userId: userId, // Pass the user's ID
+        userName: username, // Pass the user's ID
         name: name, // Match the backend field name
       };
       // Send the PUT request
-      const response = await fetch('http://192.168.1.101:8080/api/users/update-name', {
+      const response = await fetch('http://192.168.1.226:8080/api/users/update-name', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
