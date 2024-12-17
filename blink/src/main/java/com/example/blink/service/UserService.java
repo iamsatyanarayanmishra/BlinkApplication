@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -41,16 +40,6 @@ public class UserService {
         user.setPhoneNumber(number);
         return userRepository.save(user);
     }
-    
-    public User findById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
-    }
-
-    public User getUserDetails(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        return user.orElse(null);
-    }
 
     public void updateUserNumber(String username, String number) {
         User user = userRepository.findByUsername(username)
@@ -81,12 +70,8 @@ public class UserService {
         return userRepository.findByUsernameContainingOrNameContaining(searchQuery, searchQuery);
     }
 
-    public User getUserById(long id) {
-        return userRepository.findById(id);
-    }
-
-    public User archiveChat(long userId) {
-        User user = userRepository.findById(userId);
+    public User archiveChat(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setPreference("archived");
         return userRepository.save(user);
     }

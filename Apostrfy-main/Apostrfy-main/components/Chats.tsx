@@ -8,7 +8,7 @@ import Foundation from '@expo/vector-icons/Foundation';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 
-const Chats = ({ navigation }) => {
+const Chats = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [connections, setConnections] = useState([]);
   const [archivedConnections, setArchivedConnections] = useState([]);
@@ -16,6 +16,8 @@ const Chats = ({ navigation }) => {
   const [isLongPressed, setIsLongPressed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { username } = route.params; // Ensure `params` exists
+
 
   // Sort connections by time
   // const sortConnectionsByTime = (connections) => {
@@ -26,12 +28,10 @@ const Chats = ({ navigation }) => {
   //   });
   // };
 
-  const userId = 1; // Assuming the user ID is 1 for this example
-
   // Fetch connections from the API with search query
   const fetchConnections = async (search = '') => {
     try {
-      const response = await fetch(`http://192.168.1.226:8080/api/chats/${userId}?search=${search}`);
+      const response = await fetch(`http://192.168.1.226:8080/api/chats/${username}?search=${search}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }

@@ -175,6 +175,8 @@ const ChatScreen = ({ route, navigation }) => {
     );
   };
   
+  
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="white" />
@@ -266,7 +268,7 @@ const ChatScreen = ({ route, navigation }) => {
         </View>
       </Modal>
     </SafeAreaView>
-  ); 
+  );
 };
 
 const styles = StyleSheet.create({
